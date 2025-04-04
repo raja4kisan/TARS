@@ -1,35 +1,69 @@
-🧠 Tars - AI Chatbot using Azure OpenAI (ASP.NET Core MVC)
-Tars is an intelligent chatbot built with ASP.NET Core MVC that integrates Azure OpenAI to provide smart responses to user queries.
+# Tars - AI Chatbot using Azure OpenAI (ASP.NET Core MVC)
 
-🔍 Features
-Company-Aware Responses: If a query relates to company policies, rules, or HR topics, Tars extracts information from a stored PDF document and gives relevant answers.
+Tars is an AI-powered chatbot built with **ASP.NET Core MVC**, designed to provide intelligent responses to users. It connects with **Azure OpenAI** to generate conversational replies and understands company-specific queries using a stored PDF knowledge base.
 
-General Q&A: For other queries, Tars leverages Azure OpenAI to generate natural language responses.
+## 🔍 Features
 
-Typing Animation: Includes a dynamic typing animation to enhance the user experience.
+- ✨ **Smart Chat UI**: Clean and interactive chat interface using MVC Razor views.
+- 💡 **Context-Aware Responses**: Recognizes company-related queries (like leave, HR, rules) and answers from a PDF.
+- 🔍 **Azure OpenAI Integration**: Uses OpenAI's Chat Completion API for natural responses.
+- 🔹 **Typing Indicator**: Includes a bouncing dot animation while bot is generating the response.
+- ✍️ **PDF Parsing**: Parses a `text.pdf` document in `wwwroot` using PdfPig.
 
-PDF Knowledge Base: Uses PDF parsing (via PdfPig) to fetch and understand company data.
+## 🚀 Tech Stack
 
-🧰 Tech Stack
-ASP.NET Core MVC
+- **ASP.NET Core MVC**
+- **Azure OpenAI Service**
+- **PdfPig** for PDF processing
+- **JavaScript** for interactivity
+- **Bootstrap/CSS** for styling
 
-Azure OpenAI Service
+## 📆 How It Works
 
-PdfPig (for PDF text extraction)
+1. User types a message in the frontend.
+2. Request is sent to `TallyController`'s `/api/Tally/GetChatbotResponse` endpoint.
+3. If message is company-related, PDF is scanned and processed.
+4. If not, a generic Azure OpenAI response is fetched.
+5. Final response is rendered in the chat view with typing animation.
 
-JavaScript (for chat interaction and UX)
+## 📁 Folder Structure
 
-Bootstrap (for responsive design)
+```
+Chatbott/
+├── Controllers/
+│   └── TallyController.cs
+├── Service/
+│   └── AiAnalysisService.cs
+├── Models/
+│   └── QueryModel.cs
+├── Views/
+│   └── Chatbot UI
+├── wwwroot/
+│   └── text.pdf
+├── Program.cs
+└── README.md
+```
 
-🚀 How It Works
-User enters a message via the web UI.
+## ⚙️ Setup
 
-The message is posted to a Web API endpoint.
+1. Add your Azure OpenAI credentials in `appsettings.json`:
 
-If the message is company-related, it fetches data from a PDF file stored on the server.
+```json
+"AzureOpenAI": {
+  "Endpoint": "<your-endpoint>",
+  "ApiKey": "<your-api-key>",
+  "DeploymentName": "<your-deployment-name>"
+}
+```
 
-Otherwise, it generates a response using Azure OpenAI's Chat Completion API.
+2. Place your `text.pdf` (containing company rules) in the `wwwroot` folder.
+3. Run the project using Visual Studio or `dotnet run`.
+4. Open Swagger or your MVC chatbot UI to interact.
 
-The response is shown back in the chat window.
+## 🌟 Credits
+- Developed by Vishwajeet
+- Powered by Azure OpenAI & .NET Core MVC
 
+---
 
+Feel free to fork and contribute. Star the repo if you found it useful! ✨
