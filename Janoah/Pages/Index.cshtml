@@ -1,0 +1,180 @@
+﻿@page
+
+@model IndexModel
+
+
+<h2 class="chat-title" style="color: linen;">TARS</h2>
+<link rel="stylesheet" href="~/css/site.css" />
+
+ <div id="chatbox" class="chat-container">
+    @foreach (var message in Model.ChatHistory)
+    {
+<div class="chat-message @(message.IsUser ? "user-message" : "bot-message")">
+            @message.Content
+</div>
+    }
+</div>
+
+ <div class="chat-input">
+<input type="text" id="userInput" placeholder="Feel Free to Ask me Anything..." />
+<button id="sendBtn">Send</button>
+</div> 
+
+<script>
+         document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("sendBtn").addEventListener("click", sendMessage);
+        document.getElementById("userInput").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    });
+
+    async function sendMessage() {
+        var userInput = document.getElementById("userInput").value.trim();
+        if (!userInput){
+            return;
+        }
+        var chatbox = document.getElementById("chatbox");
+
+        // Append user message
+        chatbox.innerHTML += `<div class='chat-message user-message fade-in'>${userInput}</div>`;
+        document.getElementById("userInput").value = "";
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        // Append "Typing..." indicator
+        let typingIndicator = document.createElement("div");
+        typingIndicator.className = "chat-message bot-message fade-in typing-indicator";
+        typingIndicator.innerHTML = "Typing...";
+        chatbox.appendChild(typingIndicator);
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        try {
+            let response = await fetch("/Tally/GetChatbotResponse", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Text: userInput })
+            });
+
+            if (!response.ok) throw new Error("Failed to fetch response.");
+            let data = await response.json();
+            let botResponse = data.response || "I'm not sure how to respond to that.";
+
+            setTimeout(() => {
+                // Remove Typing Indicator
+                chatbox.removeChild(typingIndicator);
+
+                // Append Bot Response
+                chatbox.innerHTML += `<div class='chat-message bot-message fade-in'>${botResponse}</div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }, 1000); // Simulating a delay for better UX
+        } catch (error) {
+            console.error("Error fetching response:", error);
+            chatbox.removeChild(typingIndicator);
+            chatbox.innerHTML += `<div class='chat-message bot-message fade-in'>Error processing your request. Please try again.</div>`;
+        }
+    }
+
+</script>
+
+
+<style>
+    body {
+        background-image: url('/backImage.jpg'); /* Update path as per your wwwroot folder */
+        background-size: cover;
+        background-position: center;
+        font-family: 'Poppins', sans-serif;
+        color: white;
+    }
+
+    .chat-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: 20px;
+        color: black;
+    }
+
+    .chat-container {
+        width: 90%;
+        max-width: 600px;
+        height: 500px;
+        margin: 20px auto;
+        border-radius: 15px;
+        padding: 15px;
+        overflow-y: auto;
+        backdrop-filter: blur(10px);
+        background: #007bff; /* Display is now blue */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-message {
+        padding: 12px 15px;
+        margin: 8px;
+        border-radius: 20px;
+        max-width: 75%;
+        display: inline-block;
+        font-size: 16px;
+        word-wrap: break-word;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-message {
+        background: linear-gradient(135deg, #ff5733, #c70039); /* User message gradient */
+        color: white; /* User text color */
+        float: right;
+        text-align: right;
+        clear: both;
+    }
+
+    .bot-message {
+        background: linear-gradient(135deg, #e1e1e1, #d6d6d6);
+        color: black; /* Bot text color */
+        float: left;
+        text-align: left;
+        clear: both;
+    }
+
+    .chat-input {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        color: black;
+    }
+
+        .chat-input input {
+            width: 100%; /* Input width set to match chat container */
+            padding: 15px;
+            border: 2px solid white;
+            border-radius: 25px;
+            background: white; /* Input background color changed */
+            color: black; /* Input text color changed */
+            font-size: 18px;
+            outline: none;
+        }
+
+        .chat-input button {
+            width: 20%;
+            margin-left: 10px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+
+    }
+
+    .typing-indicator {
+        font-style: italic;
+        opacity: 0.8;
+    }
+
+</style>
