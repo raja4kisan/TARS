@@ -22,7 +22,7 @@ public class AIAnalysisService
         _azureEndpoint = configuration["AzureOpenAI:Endpoint"];
         _azureApiKey = configuration["AzureOpenAI:ApiKey"];
         _azureDeployment = configuration["AzureOpenAI:DeploymentName"];
-        _pdfFilePath = Path.Combine(env.WebRootPath, "text.pdf");
+        _pdfFilePath = Path.Combine(env.WebRootPath, "POLICIES-CSharpTek.pdf");
     }
 
     public async Task<string> GetResponseAsync(string userQuery)
